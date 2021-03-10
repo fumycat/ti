@@ -1,7 +1,7 @@
 import operator
 import collections
-import struct
-
+import os
+import math
 
 class Symbol(object):
     code = ''
@@ -43,6 +43,7 @@ def fano(l):
 
 if __name__ == '__main__':
     for z, file in enumerate(['../lab1/f1.txt', '../lab1/f2.txt', '../lab2/eng.txt']):
+        enc_file = f'{str(z)}.bin'
         print('File', file)
         with open(file, encoding="utf-8") as f:
             content = f.read()
@@ -54,16 +55,37 @@ if __name__ == '__main__':
         alp = [Symbol(x, y) for x, y in p.items()]
         fano(alp)
 
-        print('\n'.join(repr(x) for x in alp))
+        if len(alp) < 10:
+            print('\n'.join(repr(x) for x in alp))
         
         bits = content
         for s in alp:
             bits = bits.replace(s.a, s.code)
 
-        with open(f'{str(z)}.bin', 'ab') as f:
+        if os.path.isfile(enc_file):
+            os.remove(enc_file)
+
+        with open(enc_file, 'ab') as f:
             for chunk in [bits[i:i + 8] for i in range(0, len(bits), 8)]:
-                f.write(struct.pack('i', int(chunk[::-1], 2)))
+                f.write(int(chunk[::-1], 2).to_bytes(1, 'little'))
 
-        
+        avg_len = sum(x.p * len(x.code) for x in alp)
+        print('Средняя длина кодового слова -', avg_len)
 
-        print('Encoded to file', f'{str(z)}.bin', '\n')
+        entropy = -sum(x * math.log2(x) for x in p.values())
+        print('Энтропия -', entropy)
+
+        for step in range(2, 3 + 1):
+            counter = collections.defaultdict(int)
+            for cc in range(len(content) - step + 1):
+                counter[content[cc:cc+step]] += 1
+
+            p = [x / len(content) for x in counter.values()]
+
+            e = -sum(x * math.log2(x) for x in p) / step
+            print('Step', step, '-', e)
+
+        r = avg_len - entropy
+        print('Избыточность кода -', r)
+
+        print('Encoded to file', enc_file, '\n')
