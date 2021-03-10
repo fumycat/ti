@@ -7,12 +7,12 @@ counter1 = defaultdict(int)
 counter2 = defaultdict(int)
 
 with open('f1.txt') as file:
-    for c in file.read():
-        counter1[c] += 1
+	for c in file.read():
+		counter1[c] += 1
 
 with open('f2.txt') as file:
-    for c in file.read():
-        counter2[c] += 1
+	for c in file.read():
+		counter2[c] += 1
 
 p1 = {k: x / sum(counter1.values()) for k, x in counter1.items()}
 p2 = {k: x / sum(counter2.values()) for k, x in counter2.items()}
