@@ -1,4 +1,7 @@
 import operator
+import collections
+import struct
+
 
 class Symbol(object):
     code = ''
@@ -6,9 +9,8 @@ class Symbol(object):
         self.a = arg
         self.p = parg
 
-
     def __repr__(self):
-        return f'{self.a} - {str(self.p)} - {self.code}'
+        return f'{repr(self.a)} - {str(self.p)} - {self.code}'
 
     def __lt__(self, other):
          return self.p < other.p
@@ -25,23 +27,10 @@ class Symbol(object):
         else:
             return self.__add__(other)
 
-inp = {
-    'a': 0.36,
-    'b': 0.18,
-    'c': 0.18,
-    'd': 0.12,
-    'e': 0.09,
-    'f': 0.07,
-}
-
-alp = [Symbol(x, y) for x, y in inp.items()]
-
-# print(alp)
 
 def fano(l):
     if len(l) == 1:
         return
-    # print('call', l)
 
     n = min(enumerate([sum(l[:i]) - sum(l[i:]) for i in range(1, len(l))]), key=operator.itemgetter(1))[0] + 1
 
@@ -51,6 +40,30 @@ def fano(l):
     fano(l[:n])
     fano(l[n:])
 
-fano(alp)
 
-print('\n'.join(str(x) for x in alp))
+if __name__ == '__main__':
+    for z, file in enumerate(['../lab1/f1.txt', '../lab1/f2.txt', '../lab2/eng.txt']):
+        print('File', file)
+        with open(file, encoding="utf-8") as f:
+            content = f.read()
+        counter = collections.defaultdict(int)
+        for c in content:
+            counter[c] += 1
+
+        p = {k: x / sum(counter.values()) for k, x in counter.items()}
+        alp = [Symbol(x, y) for x, y in p.items()]
+        fano(alp)
+
+        print('\n'.join(repr(x) for x in alp))
+        
+        bits = content
+        for s in alp:
+            bits = bits.replace(s.a, s.code)
+
+        with open(f'{str(z)}.bin', 'ab') as f:
+            for chunk in [bits[i:i + 8] for i in range(0, len(bits), 8)]:
+                f.write(struct.pack('i', int(chunk[::-1], 2)))
+
+        
+
+        print('Encoded to file', f'{str(z)}.bin', '\n')
