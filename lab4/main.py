@@ -58,6 +58,8 @@ if __name__ == '__main__':
         if len(alp) < 10:
             print('\n'.join(repr(x) for x in alp))
         
+        # Encoding
+
         bits = content
         for s in alp:
             bits = bits.replace(s.a, s.code)
@@ -68,6 +70,12 @@ if __name__ == '__main__':
         with open(enc_file, 'ab') as f:
             for chunk in [bits[i:i + 8] for i in range(0, len(bits), 8)]:
                 f.write(int(chunk[::-1], 2).to_bytes(1, 'little'))
+
+        # Decoding
+
+        pass
+
+        # Calc
 
         avg_len = sum(x.p * len(x.code) for x in alp)
         print('Средняя длина кодового слова -', avg_len)
@@ -88,4 +96,4 @@ if __name__ == '__main__':
         r = avg_len - entropy
         print('Избыточность кода -', r)
 
-        print('Encoded to file', enc_file, '\n')
+        print('Encoded to file', enc_file, '\n\n')
