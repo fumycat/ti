@@ -52,7 +52,7 @@ if __name__ == '__main__':
             counter[c] += 1
 
         p = {k: x / sum(counter.values()) for k, x in counter.items()}
-        alp = [Symbol(x, y) for x, y in p.items()]
+        alp = sorted([Symbol(x, y) for x, y in p.items()])
         fano(alp)
 
         if len(alp) < 10:
@@ -71,27 +71,25 @@ if __name__ == '__main__':
             for chunk in [bits[i:i + 8] for i in range(0, len(bits), 8)]:
                 f.write(int(chunk[::-1], 2).to_bytes(1, 'little'))
 
-        # Decoding
-
-        pass
-
         # Calc
 
         avg_len = sum(x.p * len(x.code) for x in alp)
         print('Средняя длина кодового слова -', avg_len)
 
         entropy = -sum(x * math.log2(x) for x in p.values())
-        print('Энтропия -', entropy)
-
-        for step in range(2, 3 + 1):
+        # print('Энтропия -', entropy)
+        # entropy = None
+        for step in range(1, 3 + 1):
             counter = collections.defaultdict(int)
-            for cc in range(len(content) - step + 1):
-                counter[content[cc:cc+step]] += 1
+            for cc in range(len(bits) - step + 1):
+                counter[bits[cc:cc+step]] += 1
 
-            p = [x / len(content) for x in counter.values()]
+            p = [x / len(bits) for x in counter.values()]
 
             e = -sum(x * math.log2(x) for x in p) / step
             print('Step', step, '-', e)
+            #if step == 1:
+            #    entropy = e
 
         r = avg_len - entropy
         print('Избыточность кода -', r)

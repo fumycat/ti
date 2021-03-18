@@ -3,6 +3,7 @@ import collections
 import os
 import math
 import sys
+from math import log2
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
@@ -65,14 +66,14 @@ if __name__ == '__main__':
         for ci in range(0, len(content) - cstep + 1, cstep):
             counter[content[ci:ci+cstep]] += 1
 
-        print(counter)
+        # print(counter)
 
         p = {k: x / sum(counter.values()) for k, x in counter.items()}
         alp = [Symbol(x, y) for x, y in p.items()]
         fano(alp)
 
-        #if len(alp) < 10:
-        print('\n'.join(repr(x) for x in alp))
+        if len(alp) < 10:
+            print('\n'.join(repr(x) for x in alp))
         
         # Encoding
 
@@ -102,7 +103,9 @@ if __name__ == '__main__':
 
         #with open(enc_file, 'ab') as f:
         #    entropy = -sum(x * math.log2(x) for x in p.values())
-        #    print('Энтропия -', entropy)
+        
+        entropy = -sum(x * math.log2(x) for x in p.values())
+        print('Энтропия -', entropy)
 
         with open(enc_file, "r") as encoded:
             content = encoded.read()
@@ -112,14 +115,16 @@ if __name__ == '__main__':
             for cc in range(len(content) - step + 1):
                 counter[content[cc:cc+step]] += 1
 
-            print (counter)
+            # print (counter)
 
             p = [x / len(content) for x in counter.values()]
 
             e = -sum(x * math.log2(x) for x in p) / step
             print('Step', step, '-', e)
 
-            r = avg_len - e
-            print('Избыточность кода -', r)
+        r = avg_len - entropy
+        print('Избыточность кода -', r)
 
-        print('Encoded to file', enc_file, '\n\n')
+        ##if os.path.isfile(enc_file):
+            #    os.remove(enc_file)
+        print()
