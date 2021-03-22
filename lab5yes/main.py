@@ -30,6 +30,7 @@ class Symbol(object):
 
 
 def fano(l):
+    # print(l)
     if len(l) == 1:
         return
     elif len(l) == 2:
@@ -37,17 +38,16 @@ def fano(l):
         l[1].code += '1'
         return
     
-    # print(l)
     
     xy_list = list(chain(*[list(product([x], range(x+1, len(l)))) for x in range(1, len(l)-1)]))
     n = min(enumerate([(sum(l[:x]) - sum(l[x:y])) + (sum(l[x:y]) - sum(l[y:])) for x, y in xy_list]), key=operator.itemgetter(1))
 
     x, y = xy_list[n[0]]
-
+    # print('xy', x, y)
     for i, e in enumerate(l):
         if i < x:
             e.code += '0'
-        elif i > x and i < y:
+        elif i >= x and i < y:
             e.code += '1'
         else:
             e.code += '2'
@@ -58,6 +58,7 @@ def fano(l):
 
 
 if __name__ == '__main__':
+    #for z, file in enumerate(['../lab1/f1.txt', '../lab1/f2.txt']):
     for z, file in enumerate(['../lab1/f1.txt', '../lab1/f2.txt', '../lab2/eng.txt']):
         enc_file = f'{str(z)}.bin'
         print('File', file)
@@ -95,7 +96,7 @@ if __name__ == '__main__':
         print('Средняя длина кодового слова -', avg_len)
 
         entropy = -sum(x * math.log2(x) for x in p.values())
-        # print('Энтропия -', entropy)
+        print('Энтропия -', entropy)
         # entropy = None
         for step in range(1, 3 + 1):
             counter = collections.defaultdict(int)
